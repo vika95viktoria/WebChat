@@ -127,7 +127,7 @@ public final class XMLHistoryUtil {
     }
 
     public static synchronized List<Message> getMessages() throws SAXException, IOException, ParserConfigurationException {
-        List<Message> messages = new ArrayList<>();
+        List<Message> messages = new ArrayList<Message>();
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
         Document document = documentBuilder.parse(STORAGE_LOCATION);

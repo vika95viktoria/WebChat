@@ -21,7 +21,7 @@ import org.json.simple.parser.ParseException;
 import org.xml.sax.SAXException;
 
 @WebServlet("/chat")
-public class MessageServlet  extends HttpServlet  {
+public class MessageServlet  extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
     private static Logger logger = Logger.getLogger(MessageServlet.class.getName());
@@ -32,7 +32,7 @@ public class MessageServlet  extends HttpServlet  {
     public void init() throws ServletException {
         try {
             this.loadHistory();
-        } catch (IOException | ParserConfigurationException | TransformerException | SAXException var2 ){
+        } catch (IOException | ParserConfigurationException | TransformerException | SAXException var2) {
             logger.error(var2);
         }
 
@@ -40,11 +40,11 @@ public class MessageServlet  extends HttpServlet  {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         logger.info("doGet");
-        String token = request.getParameter(TOKEN);
+        String token = request.getParameter(MessageUtil.TOKEN);
         logger.info("Token " + token);
 
         if (token != null && !"".equals(token)) {
-            int index = getIndex(token);
+            int index = MessageUtil.getIndex(token);
             logger.info("Index " + index);
             String messages = formResponse(index);
             response.setContentType(ServletUtil.APPLICATION_JSON);
@@ -63,7 +63,7 @@ public class MessageServlet  extends HttpServlet  {
 
         try {
             JSONObject e = MessageUtil.stringToJson(data);
-            Message message= MessageUtil.jsonToMessage(e);
+            Message message = MessageUtil.jsonToMessage(e);
             MessageStorage.addMessage(message);
             XMLHistoryUtil.addData(message);
             response.setStatus(200);
@@ -84,7 +84,7 @@ public class MessageServlet  extends HttpServlet  {
             Message message = MessageUtil.jsonToMessage(e);
             String id = message.getId();
             Message messageToUpdate = MessageStorage.getMessageById(id);
-            if(messageToUpdate != null) {
+            if (messageToUpdate != null) {
                 messageToUpdate.setDescription(message.getDescription());
                 messageToUpdate.setUser(message.getUser());
                 XMLHistoryUtil.updateData(messageToUpdate);
@@ -107,7 +107,7 @@ public class MessageServlet  extends HttpServlet  {
     }
 
     private void loadHistory() throws SAXException, IOException, ParserConfigurationException, TransformerException {
-        if(XMLHistoryUtil.doesStorageExist()) {
+        if (XMLHistoryUtil.doesStorageExist()) {
             MessageStorage.addAll(XMLHistoryUtil.getMessages());
         } else {
             XMLHistoryUtil.createStorage();
@@ -122,7 +122,7 @@ public class MessageServlet  extends HttpServlet  {
         Message[] var2 = stubTasks;
         int var3 = stubTasks.length;
 
-        for(int var4 = 0; var4 < var3; ++var4) {
+        for (int var4 = 0; var4 < var3; ++var4) {
             Message message = var2[var4];
 
             try {
@@ -133,3 +133,4 @@ public class MessageServlet  extends HttpServlet  {
         }
 
     }
+}
