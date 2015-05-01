@@ -1,5 +1,5 @@
 /**
- * Created by Администратор on 09.03.2015.
+ * Created by Администратор on 01.05.2015.
  */
 'use strict';
 
@@ -13,15 +13,15 @@ var uniqueId = function() {
 };
 
 
-var theMessage = function(user, message) {
+var theMessage = function(user,description) {
     return {
         user:user,
-        message:message,
+        description:description,
         id: uniqueId()
     };
 };
 var appState = {
-    mainUrl : 'http://localhost:999/chat',
+    mainUrl : 'chat',
     messageList:[],
     token : 'TE11EN'
 };
@@ -85,7 +85,7 @@ function changeMessage(divItem){
             continue;
 
         a=i;
-        var Mess = messageList[i].message;
+        var Mess = messageList[i].description;
         document.getElementById('msgspace').value = Mess;
         control=1;
         var appContainer = document.getElementsByClassName('btn-success')[0];
@@ -112,7 +112,7 @@ function delegateEvent10(evtObj) {
 }
 
 function changeDescription(message,newMess,continueWith) {
-    message.message =newMess ;
+    message.description =newMess ;
     var nameText2 = document.getElementById('msgspace');
     nameText2.value = '';
 
@@ -124,7 +124,7 @@ function changeDescription(message,newMess,continueWith) {
 
 
 function toggle(message, continueWith) {
-    message.message="";
+    message.description="";
     put(appState.mainUrl + '?id=' + message.id, JSON.stringify(message), function() {
         continueWith();
     });
@@ -138,7 +138,7 @@ function delegateEvent(evtObj) {
     var text=nameText.value;
     if(text!=''){
 
-       addName(text);
+        addName(text);
 
     }
     nameText.value = '';
@@ -188,9 +188,9 @@ function send() {
         return;
 
 
-        addMsg(newMes,function() {
-            output(appState);
-        });
+    addMsg(newMes,function() {
+        output(appState);
+    });
 
     nameText2.value = '';
 
@@ -225,7 +225,7 @@ function addMsgInternal(message) {
 function updateItem2 (divItem, message){
 
     divItem.setAttribute('data-task-id', message.id);
-    divItem.firstChild.textContent = message.user+": "+message.message;
+    divItem.firstChild.textContent = message.user+": "+message.description;
 
 }
 
@@ -238,7 +238,7 @@ function createItem(message){
     return temp.firstChild;
 }
 function restoreName (message){
-   addName(message.user);
+    addName(message.user);
 }
 
 function restore(continueWith) {
@@ -336,3 +336,4 @@ function ajax(method, url, data, continueWith, continueWithError) {
 window.onerror = function(err) {
     output(err.toString());
 }
+
