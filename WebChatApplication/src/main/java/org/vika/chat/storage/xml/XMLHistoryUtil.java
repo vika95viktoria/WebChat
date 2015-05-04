@@ -73,6 +73,7 @@ public final class XMLHistoryUtil {
         document.getDocumentElement().normalize();
         Element root = document.getDocumentElement();
 
+
         Element messageElement = document.createElement("message");
 
         root.appendChild(messageElement);

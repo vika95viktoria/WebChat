@@ -4,7 +4,7 @@
 'use strict';
 
 var control=0;
-var user="";
+var username="";
 var uniqueId = function() {
     var date = Date.now();
     var random = Math.random() * Math.random();
@@ -40,7 +40,8 @@ function func(){
 }
 function run() {
     var element = document.getElementsByClassName('MyEl')[0];
-
+    username=restorename();
+    addName(username);
     element.addEventListener('click', delegateEvent);
 
 }
@@ -66,10 +67,16 @@ function onToggleItem(divItem) {
         if(messageList[i].id != id)
             continue;
 
-        toggle(messageList[i], function() {
-            updateItem2(divItem, messageList[i]);
-            output(messageList);
-        });
+        if(username!=messageList[i].user)
+        {
+            alert("You can't delete it! It's not yours")
+        }
+        else {
+            toggle(messageList[i], function () {
+                updateItem2(divItem, messageList[i]);
+                output(messageList);
+            });
+        }
 
         return;
     }
@@ -110,7 +117,27 @@ function delegateEvent10(evtObj) {
         control = 0;
     }
 }
+function storename(name) {
 
+
+    if(typeof(Storage) == "undefined") {
+        alert('localStorage is not accessible');
+        return;
+    }
+
+    localStorage.setItem("user", JSON.stringify(name));
+}
+
+function restorename() {
+    if(typeof(Storage) == "undefined") {
+        alert('localStorage is not accessible');
+        return;
+    }
+
+    var item = localStorage.getItem("user");
+
+    return item && JSON.parse(item);
+}
 function changeDescription(message,newMess,continueWith) {
     message.description =newMess ;
     var nameText2 = document.getElementById('msgspace');
@@ -139,6 +166,7 @@ function delegateEvent(evtObj) {
     if(text!=''){
 
         addName(text);
+        storename(text);
 
     }
     nameText.value = '';
@@ -152,7 +180,8 @@ function addName(value) {
 
 
     document.addEventListener( "DOMContentLoaded", function addName() {}, false );
-    user=value;
+    username=value;
+    storename(value);
     document.getElementById('myName').innerHTML=value;
 }
 
@@ -161,16 +190,13 @@ function sendMes(){
     var appContainer = document.getElementsByClassName('btn-success')[0];
     appContainer.addEventListener('click', delegateEvent4);
 
-    restore();
+    doPolling();
 
 }
 function createAllMessages(allMessages) {
     for(var i = 0; i < allMessages.length; i++) {
         addMsgInternal(allMessages[i]);
-        if(i==allMessages.length-1)
-        {
-            restoreName(allMessages[i]);
-        }
+
     }
 }
 function delegateEvent4(evtObj) {
@@ -183,7 +209,7 @@ function delegateEvent4(evtObj) {
 function send() {
 
     var nameText2 = document.getElementById('msgspace');
-    var newMes = theMessage(user,nameText2.value);
+    var newMes = theMessage(username,nameText2.value);
     if(nameText2.value == '')
         return;
 
@@ -198,7 +224,7 @@ function send() {
 
 function addMsg(message, continueWith) {
     post(appState.mainUrl, JSON.stringify(message), function(){
-        restore();
+       doPolling();
     });
 }
 
@@ -237,26 +263,24 @@ function createItem(message){
 
     return temp.firstChild;
 }
-function restoreName (message){
-    addName(message.user);
-}
 
-function restore(continueWith) {
-    var url = appState.mainUrl + '?token=' + appState.token;
-    get(url, function(responseText) {
-        console.assert(responseText != null);
+function doPolling() {
+    function loop() {
+        var url = appState.mainUrl + '?token=' + appState.token;
 
-        var response = JSON.parse(responseText);
+        get(url, function(responseText) {
+            var response = JSON.parse(responseText);
 
-        appState.token = response.token;
-        createAllMessages(response.messages);
-        output(appState);
+            appState.token = response.token;
+            createAllMessages(response.messages);
+            setTimeout(loop, 1000);
+        }, function(error) {
+            defaultErrorHandler(error);
+            setTimeout(loop, 1000);
+        });
+    }
 
-
-
-        continueWith && continueWith();
-    });
-
+    loop();
 }
 
 function output(value){

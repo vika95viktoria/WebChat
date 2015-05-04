@@ -57,6 +57,7 @@ public class MessageServlet  extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         logger.info("doGet");
+
         String token = request.getParameter("token");
         logger.info("Token " + token);
         response.setCharacterEncoding("UTF-8");
@@ -71,6 +72,7 @@ public class MessageServlet  extends HttpServlet {
         } else {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "'token' parameter needed");
         }
+
     }
 
 
