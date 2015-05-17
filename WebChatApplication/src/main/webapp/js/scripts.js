@@ -74,7 +74,7 @@ function onToggleItem(divItem) {
         else {
             toggle(messageList[i], function () {
                 updateItem2(divItem, messageList[i]);
-                output(messageList);
+               // output(messageList);
             });
         }
 
@@ -91,12 +91,19 @@ function changeMessage(divItem){
         if(messageList[i].id != id)
             continue;
 
+
         a=i;
-        var Mess = messageList[i].description;
-        document.getElementById('msgspace').value = Mess;
-        control=1;
-        var appContainer = document.getElementsByClassName('btn-success')[0];
-        appContainer.addEventListener('click', delegateEvent10);
+        if(username!=messageList[i].user)
+        {
+            alert("You can't edit it! It's not yours")
+        }
+        else {
+            var Mess = messageList[i].description;
+            document.getElementById('msgspace').value = Mess;
+            control = 1;
+            var appContainer = document.getElementsByClassName('btn-success')[0];
+            appContainer.addEventListener('click', delegateEvent10);
+        }
         return;
     }
 
@@ -109,7 +116,7 @@ function delegateEvent10(evtObj) {
         var messageList = appState.messageList;
         changeDescription(messageList[a], Mess,function() {
             updateItem2(editlabel, messageList[a]);
-            output(messageList);
+           // output(messageList);
         });
 
 
@@ -193,6 +200,30 @@ function sendMes(){
     doPolling();
 
 }
+
+/*function checkServer(){
+    var appContainer = document.getElementById('CheckServer')[0];
+    appContainer.addEventListener('click', delegateEvent55);
+}
+
+function delegateEvent55(evtObj) {
+
+    var xmlhttp;
+    if (window.XMLHttpRequest) {
+        xmlhttp = new XMLHttpRequest();
+    }
+    else {
+        xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    xmlhttp.onreadystatechange = function () {
+        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+            document.getElementById("ServerStatus").innerHTML = "online";
+        }
+        else if (xmlhttp.readyState == 4 && xmlhttp.status != 200) {
+            document.getElementById("ServerStatus").innerHTML = "offline";
+        }
+    }
+}*/
 function createAllMessages(allMessages) {
     for(var i = 0; i < allMessages.length; i++) {
         addMsgInternal(allMessages[i]);
@@ -215,7 +246,7 @@ function send() {
 
 
     addMsg(newMes,function() {
-        output(appState);
+       // output(appState);
     });
 
     nameText2.value = '';
@@ -265,6 +296,24 @@ function createItem(message){
 }
 
 function doPolling() {
+
+        /*  var request =  new XMLHttpRequest();
+         request.open("GET", url, true);
+         request.setRequestHeader("Content-Type","application/x-javascript;");
+         request.onreadystatechange = function() {
+         if (request.readyState == 4) {
+         if (request.status == 200){
+         if (request.responseText) {
+         var response = JSON.parse(request.responseText);
+
+         appState.token = response.token;
+         createAllMessages(response.messages);
+         }
+         }
+         doPolling();
+         }
+         };
+         request.send(null);*/
     function loop() {
         var url = appState.mainUrl + '?token=' + appState.token;
 
@@ -361,3 +410,49 @@ window.onerror = function(err) {
     output(err.toString());
 }
 
+/*function listenOnlineUsers(repeat) {
+    var url = "comet";
+
+    $.ajax({
+        url: url,
+        cache: false, //cache must be false so that messages dont repeat themselves
+        dataType: 'json',
+        success: function(data) {
+            if(data && data.length) {
+                var l = data.length;
+                var i = 0;
+
+                for(i; i < l; i++) {
+                    $('#log').prepend(data[i].msg + "<br/>");
+                }
+            }
+
+            //when a request is complete a new one is started
+            if(repeat) {
+                setTimeout(function() {
+                    listenOnlineUsers(true);
+                }, 100);
+            }
+
+        },
+
+        //when a request is complete a new one is started
+        error: function(a, b, c) {
+            if(repeat) {
+                setTimeout(function() {
+                    listenOnlineUsers(true);
+                }, 100);
+            }
+        }
+    });
+}
+
+$(document).ready(function() {
+    loadEvents();
+
+    setTimeout(function() {
+        listenOnlineUsers(true);
+    }, 1000);
+
+
+});*/

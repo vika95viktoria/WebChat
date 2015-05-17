@@ -14,6 +14,9 @@ import static org.vika.chat.util.MessageUtil.stringToJson;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import javax.servlet.AsyncContext;
+import java.util.ArrayList;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -28,6 +31,8 @@ import org.vika.chat.model.Message;
 import org.vika.chat.model.MessageStorage;
 import org.vika.chat.storage.xml.XMLHistoryUtil;
 import org.vika.chat.util.ServletUtil;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
@@ -40,6 +45,7 @@ public class MessageServlet  extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
     private static Logger logger = Logger.getLogger(MessageServlet.class.getName());
+    private List<AsyncContext> contexts = new LinkedList<>();
 
     public MessageServlet() {
     }
@@ -56,6 +62,10 @@ public class MessageServlet  extends HttpServlet {
 
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+      /*  final AsyncContext asyncContext = request.startAsync(request, response);
+        asyncContext.setTimeout(10 * 60 * 1000);
+        contexts.add(asyncContext);*/
+
         logger.info("doGet");
 
         String token = request.getParameter("token");
@@ -77,6 +87,8 @@ public class MessageServlet  extends HttpServlet {
 
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+       /* List<AsyncContext> asyncContexts = new ArrayList<>(this.contexts);
+        this.contexts.clear();*/
         logger.info("doPost");
         String data = ServletUtil.getMessageBody(request);
         logger.info(data);
@@ -84,13 +96,9 @@ public class MessageServlet  extends HttpServlet {
         try {
 
             JSONObject e = stringToJson(data);
-
             Message message = jsonToMessage(e);
-
-
             MessageStorage.addMessage(message);
             XMLHistoryUtil.addData(message);
-
             response.setStatus(200);
         } catch (ParserConfigurationException | SAXException | TransformerException | ParseException var6) {
             logger.error(var6);
@@ -102,6 +110,8 @@ public class MessageServlet  extends HttpServlet {
 
 
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+      /*  List<AsyncContext> asyncContexts = new ArrayList<>(this.contexts);
+        this.contexts.clear();*/
         logger.info("doPut");
         String data = ServletUtil.getMessageBody(request);
         logger.info(data);
@@ -119,6 +129,7 @@ public class MessageServlet  extends HttpServlet {
             } else {
                 response.sendError(400, "Message does not exist");
             }
+
         } catch (ParserConfigurationException | SAXException | TransformerException | XPathExpressionException | ParseException var8) {
             logger.error(var8);
             response.sendError(400);
